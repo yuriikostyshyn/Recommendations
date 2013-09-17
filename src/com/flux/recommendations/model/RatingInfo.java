@@ -7,10 +7,10 @@ import java.util.List;
 
 public class RatingInfo {
 	private String[] itemNames;
-	private List<Integer[]> ratings;
+	private List<BigDecimal[]> ratings;
 
 	public RatingInfo() {
-		this.ratings = new ArrayList<Integer[]>();
+		this.ratings = new ArrayList<BigDecimal[]>();
 	}
 
 	public String[] getItemNames() {
@@ -21,28 +21,29 @@ public class RatingInfo {
 		this.itemNames = itemNames;
 	}
 
-	public List<Integer[]> getRatings() {
+	public List<BigDecimal[]> getRatings() {
 		return ratings;
 	}
 
-	public void setRatings(List<Integer[]> ratings) {
+	public void setRatings(List<BigDecimal[]> ratings) {
 		this.ratings = ratings;
 	}
 
 	public MeanRating[] getMeanRatings() {
 		MeanRating[] result = new MeanRating[itemNames.length];
-		int[] intermediateResult = new int[itemNames.length];
+		BigDecimal[] intermediateResult = new BigDecimal[itemNames.length];
+		initArray(intermediateResult);
 		int[] ratingCounts = new int[itemNames.length];
 
 		for (int i = 0; i < itemNames.length; i++) {
-			for (Integer[] row : ratings) {
+			for (BigDecimal[] row : ratings) {
 				if (row[i] != null) {
-					intermediateResult[i] += row[i];
+					intermediateResult[i] = intermediateResult[i].add(row[i]);
 					ratingCounts[i]++;
 				}
 			}
 
-			result[i] = new MeanRating(itemNames[i], new BigDecimal(intermediateResult[i]));
+			result[i] = new MeanRating(itemNames[i], new BigDecimal(intermediateResult[i].toPlainString()));
 			result[i].setMeanData(result[i].getMeanData().divide(new BigDecimal(ratingCounts[i]), new MathContext(3)));
 		}
 
@@ -54,8 +55,8 @@ public class RatingInfo {
 		int[] ratingCounts = new int[itemNames.length];
 
 		for (int i = 0; i < itemNames.length; i++) {
-			for (Integer[] row : ratings) {
-				if (row[i] != null) {
+			for (BigDecimal[] row : ratings) {
+				if (row[i] != null && row[i].intValue() != 0) {
 					ratingCounts[i]++;
 				}
 			}
@@ -72,9 +73,9 @@ public class RatingInfo {
 		int[] ratingCounts = new int[itemNames.length];
 
 		for (int i = 0; i < itemNames.length; i++) {
-			for (Integer[] row : ratings) {
+			for (BigDecimal[] row : ratings) {
 				if (row[i] != null) {
-					if (row[i] >= 4) {
+					if (row[i].compareTo(new BigDecimal(4)) >= 0) {
 						intermediateResult[i]++;
 					}
 					ratingCounts[i]++;
@@ -104,10 +105,10 @@ public class RatingInfo {
 		MeanRating[] result = new MeanRating[itemNames.length];
 		int[] intermediateResult = new int[itemNames.length];
 		int ratingCount = 0;
-		for (Integer[] row : ratings) {
-			if (row[id] != null) {
+		for (BigDecimal[] row : ratings) {
+			if (row[id] != null && row[id].intValue() != 0) {
 				for (int i = 0; i < itemNames.length; i++) {
-					if (i != id && row[i] != null) {
+					if (i != id && row[i] != null && row[i].intValue() != 0) {
 						intermediateResult[i]++;
 					}
 				}
@@ -141,10 +142,10 @@ public class RatingInfo {
 		int[] intermediateResultWithout = new int[itemNames.length];
 		int ratingCountWith = 0;
 		int ratingCountWithout = 0;
-		for (Integer[] row : ratings) {
+		for (BigDecimal[] row : ratings) {
 			for (int i = 0; i < itemNames.length; i++) {
-				if (i != id && row[i] != null) {
-					if (row[id] != null) {
+				if (i != id && row[i] != null && row[i].intValue() != 0) {
+					if (row[id] != null && row[id].intValue() != 0) {
 						intermediateResultWith[i]++;
 					} else {
 						intermediateResultWithout[i]++;
@@ -156,7 +157,7 @@ public class RatingInfo {
 
 			}
 
-			if (row[id] != null) {
+			if (row[id] != null && row[id].intValue() != 0) {
 				ratingCountWith++;
 			} else {
 				ratingCountWithout++;
@@ -181,14 +182,20 @@ public class RatingInfo {
 	}
 
 	private void addNewRow(String[] stringArray) {
-		Integer[] row = new Integer[stringArray.length];
+		BigDecimal[] row = new BigDecimal[stringArray.length];
 		for (int i = 0; i < stringArray.length; i++) {
 			if (stringArray[i] != null && !stringArray[i].isEmpty()) {
-				row[i] = new Integer(stringArray[i]);
+				row[i] = new BigDecimal(stringArray[i]);
 			} else {
 				row[i] = null;
 			}
 		}
 		ratings.add(row);
+	}
+
+	private void initArray(BigDecimal[] array) {
+		for (int i = 0; i < array.length; i++) {
+			array[i] = new BigDecimal(0);
+		}
 	}
 }

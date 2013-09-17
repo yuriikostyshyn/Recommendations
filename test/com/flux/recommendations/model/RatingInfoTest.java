@@ -13,30 +13,30 @@ public class RatingInfoTest {
 
 	@Test
 	public void shouldReturnMeanRatings() {
-		List<Integer[]> ratings = new ArrayList<Integer[]>();
-		Integer[] array = new Integer[4];
-		array[0] = 1;
+		List<BigDecimal[]> ratings = new ArrayList<BigDecimal[]>();
+		BigDecimal[] array = new BigDecimal[4];
+		array[0] = new BigDecimal(1);
 		array[1] = null;
-		array[2] = 4;
+		array[2] = new BigDecimal(4);
 		array[3] = null;
 		ratings.add(array);
-		array = new Integer[4];
-		array[0] = 5;
+		array = new BigDecimal[4];
+		array[0] = new BigDecimal(5);
 		array[1] = null;
-		array[2] = 3;
+		array[2] = new BigDecimal(3);
 		array[3] = null;
 		ratings.add(array);
-		array = new Integer[4];
+		array = new BigDecimal[4];
 		array[0] = null;
-		array[1] = 4;
-		array[2] = 3;
+		array[1] = new BigDecimal(4);
+		array[2] = new BigDecimal(3);
 		array[3] = null;
 		ratings.add(array);
-		array = new Integer[4];
+		array = new BigDecimal[4];
 		array[0] = null;
 		array[1] = null;
-		array[2] = 3;
-		array[3] = 3;
+		array[2] = new BigDecimal(3);
+		array[3] = new BigDecimal(3);
 		ratings.add(array);
 
 		String[] itemNames = new String[] { "1", "2", "3", "4" };
@@ -52,7 +52,8 @@ public class RatingInfoTest {
 		expectedResult[3] = new MeanRating("4", new BigDecimal(3.000));
 
 		MeanRating[] actualResult = underTest.getMeanRatings();
-		assertEquals(Arrays.asList(expectedResult).toString(), Arrays.asList(actualResult).toString());
+		assertEquals(Arrays.asList(expectedResult).toString(),
+				Arrays.asList(actualResult).toString());
 
 	}
 }
