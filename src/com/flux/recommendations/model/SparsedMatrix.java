@@ -116,7 +116,7 @@ public class SparsedMatrix {
 
 	}
 
-	private Node getRowHeader(int rowId) {
+	public Node getRowHeader(int rowId) {
 		return getElementByColumnHeaderAndRowId(header, rowId);
 	}
 
@@ -154,7 +154,7 @@ public class SparsedMatrix {
 		return element;
 	}
 
-	private Node getColumnHeader(int columnId) {
+	public Node getColumnHeader(int columnId) {
 		return getElementByRowHeaderAndColumnId(header, columnId);
 	}
 
@@ -194,7 +194,7 @@ public class SparsedMatrix {
 
 	// TODO DimensionIterator
 
-	protected DimensionIterator<BigDecimal> iterator(Dimension dimension) {
+	public DimensionIterator<BigDecimal> iterator(Dimension dimension) {
 		return iterator(dimension, -1);
 	}
 

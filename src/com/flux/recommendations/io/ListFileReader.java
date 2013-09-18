@@ -14,6 +14,7 @@ import java.util.Scanner;
 import javax.swing.text.rtf.RTFEditorKit;
 
 import com.flux.recommendations.model.RatingInfo;
+import com.flux.recommendations.model.SparsedMatrix;
 
 public class ListFileReader {
 	private String fileName;
@@ -22,42 +23,31 @@ public class ListFileReader {
 		this.fileName = fileName;
 	}
 
-	public RatingInfo getRatings() throws FileNotFoundException {
-		Map<String, List<RatingRecord>> ratingRecords = new HashMap<String, List<RatingRecord>>();
+	public SparsedMatrix getRatings() throws FileNotFoundException {
+		List<RatingRecord> ratingRecords = new ArrayList<RatingRecord>();
 
 		File fileToRead = new File(fileName);
 		Scanner scanner = new Scanner(fileToRead);
 		int maxId = 0;
+		int maxUserId = 0;
+
 		while (scanner.hasNextLine()) {
 			RatingRecord record = new RatingRecord(scanner.nextLine());
 			if (record.getMovieId() > maxId) {
 				maxId = record.getMovieId();
 			}
-			if (ratingRecords.containsKey(record.getUserId())) {
-				ratingRecords.get(record.getUserId()).add(record);
-			} else {
-				List<RatingRecord> list = new ArrayList<RatingRecord>();
-				list.add(record);
-				ratingRecords.put(record.getUserId(), list);
+			if (record.getUserId() > maxUserId) {
+				maxUserId = record.getUserId();
 			}
+			ratingRecords.add(record);
 		}
 		scanner.close();
 
-		String[] itemIds = new String[maxId];
-		List<BigDecimal[]> ratings = new ArrayList<BigDecimal[]>();
-		for (Entry<String, List<RatingRecord>> records : ratingRecords.entrySet()) {
-			BigDecimal[] userRatings = new BigDecimal[maxId];
-			initArray(userRatings);
-			ratings.add(userRatings);
-			for (RatingRecord record : records.getValue()) {
-				userRatings[record.getMovieId() - 1] = new BigDecimal(record.getRating().toPlainString());
-				itemIds[record.getMovieId() - 1] = new Integer(record.getMovieId()).toString();
-			}
-		}
+		SparsedMatrix result = new SparsedMatrix(maxId, maxUserId);
 
-		RatingInfo result = new RatingInfo();
-		result.setItemNames(itemIds);
-		result.setRatings(ratings);
+		for (RatingRecord record : ratingRecords) {
+			result.insertNewElement(record.getUserId(), record.getMovieId(), record.getRating());
+		}
 
 		return result;
 
@@ -70,14 +60,14 @@ public class ListFileReader {
 	}
 
 	private class RatingRecord {
-		private String userId;
+		private int userId;
 		private int movieId;
 		private BigDecimal rating;
 
 		public RatingRecord(String record) {
 			String[] values = record.split(",");
 			if (values.length == 3) {
-				userId = values[0];
+				userId = Integer.parseInt(values[0]);
 				movieId = Integer.parseInt(values[1]);
 				rating = new BigDecimal(values[2]);
 			} else {
@@ -86,11 +76,11 @@ public class ListFileReader {
 
 		}
 
-		public String getUserId() {
+		public int getUserId() {
 			return userId;
 		}
 
-		public void setUserId(String userId) {
+		public void setUserId(int userId) {
 			this.userId = userId;
 		}
 
