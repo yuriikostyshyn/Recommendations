@@ -7,8 +7,6 @@ import java.util.NoSuchElementException;
 public class SparsedMatrix {
 
 	private Node header;
-	private List<Node> rowHeaders;
-	private List<Node> columnHeaders;
 	private int width;
 	private int height;
 

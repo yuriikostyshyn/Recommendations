@@ -25,20 +25,24 @@ public class RatingsComputator {
 		}
 
 		Node currentColumnHeader = matrix.getHeader().getLeft();
-		while (currentColumnHeader != matrix.getHeader() && currentColumnHeader.getColumn() != movieId) {
-			MeanRating currentMeanRating = new MeanRating(((Integer) currentColumnHeader.getColumn()).toString(), new BigDecimal(0.0));
-			int currentWithCount = 0;
-			Node currentColumnElement = currentColumnHeader.getTop();
-			while (currentColumnElement != currentColumnHeader) {
-				if (baseUserIds.contains(currentColumnElement.getRow())) {
-					currentWithCount++;
+		while (currentColumnHeader != matrix.getHeader()) {
+			if (currentColumnHeader.getColumn() != movieId) {
+				MeanRating currentMeanRating = new MeanRating(((Integer) currentColumnHeader.getColumn()).toString(), new BigDecimal(0.0));
+				int currentWithCount = 0;
+				Node currentColumnElement = currentColumnHeader.getTop();
+				while (currentColumnElement != currentColumnHeader) {
+					if (baseUserIds.contains(currentColumnElement.getRow())) {
+						currentWithCount++;
+					}
+					currentColumnElement = currentColumnElement.getTop();
 				}
-				currentColumnElement = currentColumnElement.getTop();
+
+				currentMeanRating.setMeanData(new BigDecimal(currentWithCount).divide(new BigDecimal(baseUserIds.size()),
+						new MathContext(7)).round(new MathContext(2)));
+				
+				result.add(currentMeanRating);
+
 			}
-
-			currentMeanRating.setMeanData(new BigDecimal(currentWithCount).divide(new BigDecimal(baseUserIds.size()), new MathContext(3)));
-			result.add(currentMeanRating);
-
 			currentColumnHeader = currentColumnHeader.getLeft();
 		}
 
@@ -58,29 +62,32 @@ public class RatingsComputator {
 
 		Node currentColumnHeader = matrix.getHeader().getLeft();
 		while (currentColumnHeader != matrix.getHeader()) {
-			MeanRating currentMeanRating = new MeanRating(((Integer) currentColumnHeader.getColumn()).toString(), new BigDecimal(0.0));
-			int currentWithCount = 0;
-			int currentWithoutCount = 0;
-			Node currentColumnElement = currentColumnHeader.getTop();
-			while (currentColumnElement != currentColumnHeader) {
-				if (baseUserIds.contains(currentColumnElement.getRow())) {
-					currentWithCount++;
-				} else {
-					currentWithoutCount++;
+			if (currentColumnHeader.getColumn() != movieId) {
+				MeanRating currentMeanRating = new MeanRating(((Integer) currentColumnHeader.getColumn()).toString(), new BigDecimal(0.0));
+				int currentWithCount = 0;
+				int currentWithoutCount = 0;
+				Node currentColumnElement = currentColumnHeader.getTop();
+				while (currentColumnElement != currentColumnHeader) {
+					if (baseUserIds.contains(currentColumnElement.getRow())) {
+						currentWithCount++;
+					} else {
+						currentWithoutCount++;
+					}
+					currentColumnElement = currentColumnElement.getTop();
 				}
-				currentColumnElement = currentColumnElement.getTop();
+
+				BigDecimal ratingValue = new BigDecimal(currentWithCount).divide(new BigDecimal(baseUserIds.size()), new MathContext(7));
+				if (currentWithoutCount > 0) {
+					ratingValue = ratingValue.divide(new BigDecimal(currentWithoutCount), new MathContext(7));
+							ratingValue = ratingValue.multiply(new BigDecimal(matrix.getHeight() - baseUserIds.size()), new MathContext(3));
+				}
+				currentMeanRating.setMeanData(ratingValue);
+				result.add(currentMeanRating);
+
 			}
-
-			BigDecimal ratingValue = new BigDecimal(currentWithCount).divide(new BigDecimal(baseUserIds.size()), new MathContext(3));
-			ratingValue = ratingValue.divide(new BigDecimal(currentWithoutCount), new MathContext(3)).multiply(
-					new BigDecimal(matrix.getHeight() - baseUserIds.size()), new MathContext(3));
-			currentMeanRating.setMeanData(ratingValue);
-			result.add(currentMeanRating);
-
 			currentColumnHeader = currentColumnHeader.getLeft();
 		}
 
 		return result;
 	}
-
 }

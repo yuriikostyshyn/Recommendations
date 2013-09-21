@@ -5,9 +5,12 @@ import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 import java.util.Scanner;
 
@@ -28,22 +31,19 @@ public class ListFileReader {
 
 		File fileToRead = new File(fileName);
 		Scanner scanner = new Scanner(fileToRead);
-		int maxId = 0;
-		int maxUserId = 0;
+
+		Set<Integer> users = new HashSet<Integer>();
+		Set<Integer> movies = new HashSet<Integer>();
 
 		while (scanner.hasNextLine()) {
 			RatingRecord record = new RatingRecord(scanner.nextLine());
-			if (record.getMovieId() > maxId) {
-				maxId = record.getMovieId();
-			}
-			if (record.getUserId() > maxUserId) {
-				maxUserId = record.getUserId();
-			}
+			users.add(record.getUserId());
+			movies.add(record.getMovieId());
 			ratingRecords.add(record);
 		}
 		scanner.close();
 
-		SparsedMatrix result = new SparsedMatrix(maxId, maxUserId);
+		SparsedMatrix result = new SparsedMatrix(movies.size(), users.size());
 
 		for (RatingRecord record : ratingRecords) {
 			result.insertNewElement(record.getUserId(), record.getMovieId(), record.getRating());
