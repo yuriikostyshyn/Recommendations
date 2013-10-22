@@ -16,6 +16,11 @@ public class UserRatingsTable {
         this.movieTitles = movieTitles;
     }
 
+    public UserRatingsList getRatingsByUserId(int userId){
+        int userIndex = userIds.indexOf(userId);
+        return ratingsTable.get(userIndex);
+    }
+    
     public List<UserRatingsList> getRatingsTable() {
         return ratingsTable;
     }

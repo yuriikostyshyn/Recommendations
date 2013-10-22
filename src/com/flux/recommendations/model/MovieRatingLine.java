@@ -8,11 +8,12 @@ public class MovieRatingLine {
 	private HashMap<Integer, BigDecimal> userRatings;
 
 	public MovieRatingLine(String data) {
+	    this.userRatings = new HashMap<Integer, BigDecimal>();
 		String[] parsedData = data.split(",", -1);
-		movieName = parsedData[0];
+		this.movieName = parsedData[0];
 
 		for (int i = 1; i < parsedData.length; i++) {
-			if (parsedData[i] != null) {
+			if (parsedData[i] != null && !parsedData[i].isEmpty()) {
 				userRatings.put(i - 1, new BigDecimal(parsedData[i]));
 			}
 		}

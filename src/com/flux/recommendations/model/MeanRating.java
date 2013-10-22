@@ -2,7 +2,7 @@ package com.flux.recommendations.model;
 
 import java.math.BigDecimal;
 
-public class MeanRating {
+public class MeanRating implements Comparable<MeanRating> {
 	private String itemName;
 	private BigDecimal meanData;
 
@@ -46,4 +46,9 @@ public class MeanRating {
 	public String toString() {
 		return "item name:" + itemName + ", value:" + meanData;
 	}
+
+    @Override
+    public int compareTo(MeanRating o) {
+        return - this.meanData.compareTo(o.getMeanData());
+    }
 }
