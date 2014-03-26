@@ -171,11 +171,9 @@ public class SimilarityComputator {
             int count = 0;
             List<Integer> intersectingIds = new ArrayList<Integer>();
             for (Integer movieIndex : userRatingsTable.keySet()) {
-                if (targetUserRatingsTable.containsKey(movieIndex)) {
                     count++;
                     intersectingIds.add(movieIndex);
                     meanRating = meanRating.add(userRatingsTable.get(movieIndex), new MathContext(6));
-                }
             }
             meanRating = meanRating.divide(new BigDecimal(count), new MathContext(6));
             meanRatings.put(i, meanRating);
